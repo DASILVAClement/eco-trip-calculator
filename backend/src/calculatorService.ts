@@ -1,3 +1,5 @@
+import factory from './calculators/TransportCalculatorFactory';
+
 type TransportType = 'bike' | 'walk' | 'car' | 'train' | 'bus';
 type CarType = 'thermal' | 'electric' | 'hybrid';
 type Country = 'France' | 'Germany' | 'Poland' | 'Norway' | 'other';
@@ -29,59 +31,21 @@ class CalculatorService {
     if (t === 'bike' || t === 'walk') {
       result = 0;
       lbl = 'GREEN';
-    } else if (t === 'car') {
-      result = this._calculateCar(d, ct, p, c);
-      lbl = this.labelGenerator.getLabel(result);
-    } else if (t === 'train') {
-      result = this._calculateTrain(d, c);
-      lbl = this.labelGenerator.getLabel(result);
-    } else if (t === 'bus') {
-      result = d * 0.104;
-      lbl = this.labelGenerator.getLabel(result);
+    } else {
+      const calculator = factory.getCalculator(t);
+      if (calculator) {
+        if (t === 'car') {
+          result = calculator.calculate(d, ct, p, c);
+        } else if (t === 'train') {
+          result = calculator.calculate(d, c);
+        } else if (t === 'bus') {
+          result = calculator.calculate(d);
+        }
+        lbl = this.labelGenerator.getLabel(result);
+      }
     }
 
     return { co2: result, label: lbl };
-  }
-
-  private _calculateCar(d: any, ct: any, p: any, c: any): number {
-    var result = 0;
-    if (ct === 'thermal') {
-      result = d * 0.192;
-    } else if (ct === 'electric') {
-      if (c === 'France') {
-        result = d * 0.012;
-      } else if (c === 'Germany') {
-        result = d * 0.045;
-      } else if (c === 'Poland') {
-        result = d * 0.078;
-      } else {
-        result = d * 0.04;
-      }
-    } else if (ct === 'hybrid') {
-      result = d * 0.098;
-    }
-
-    if (p > 0) {
-      result = result / p;
-    }
-
-    return result;
-  }
-
-  private _calculateTrain(d: any, c: any): number {
-    var result = 0;
-    if (c === 'France') {
-      result = d * 0.0032;
-    } else if (c === 'Germany') {
-      result = d * 0.032;
-    } else if (c === 'Poland') {
-      result = d * 0.069;
-    } else if (c === 'Norway') {
-      result = d * 0.001;
-    } else {
-      result = d * 0.041;
-    }
-    return result;
   }
 }
 

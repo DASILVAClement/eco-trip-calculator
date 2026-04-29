@@ -89,16 +89,19 @@ On peut maintenant modifier les seuils de label sans toucher au calcul d'émissi
 
 ---
 
-## Pattern GOF appliqué : [nom du pattern]
+## Pattern GOF appliqué : Factory Method (Fabrique)
 
 **Problème résolu :**
-[Quel problème de conception ce pattern adresse-t-il dans ce contexte ?]
+Le mélange des responsabilités dans `backend/src/calculatorService.ts` : la classe devait à la fois déterminer comment calculer selon le transport et _faire_ le calcul.
 
 **Structure mise en place :**
-[Décrivez les classes/interfaces créées et leur rôle]
+
+- Création d'une classe TransportCalculatorFactory.
+- Cette classe expose une unique méthode getCalculator(type: string) qui agit comme un distributeur : selon le type demandé ("car", "train", etc.).
+- Le CalculatorService principal ne fait plus qu'appeler la Fabrique pour obtenir le bon calculateur, puis exécute le calcul.
 
 **Bénéfice concret :**
-[Ce que ça change en pratique]
+Si l'on ajoute un type de transport, seule la Fabrique est impactée pour lier la nouvelle chaîne de caractères à son calcul. 
 
 ---
 
