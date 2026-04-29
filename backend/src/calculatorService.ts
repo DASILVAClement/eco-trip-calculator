@@ -1,4 +1,27 @@
+type TransportType = 'bike' | 'walk' | 'car' | 'train' | 'bus';
+type CarType = 'thermal' | 'electric' | 'hybrid';
+type Country = 'France' | 'Germany' | 'Poland' | 'Norway' | 'other';
+type Label = 'GREEN' | 'ORANGE' | 'RED';
+
+class LabelGenerator {
+  getLabel(emission: number): Label {
+    if (emission < 5) {
+      return 'GREEN';
+    } else if (emission >= 5 && emission < 15) {
+      return 'ORANGE';
+    } else {
+      return 'RED';
+    }
+  }
+}
+
 class CalculatorService {
+  private labelGenerator: LabelGenerator;
+
+  constructor() {
+    this.labelGenerator = new LabelGenerator();
+  }
+
   calculate(d: any, t: any, ct: any, p: any, c: any): any {
     var result = 0;
     var lbl = '';
@@ -8,19 +31,19 @@ class CalculatorService {
       lbl = 'GREEN';
     } else if (t === 'car') {
       result = this._calculateCar(d, ct, p, c);
-      lbl = this._getLabel(result);
+      lbl = this.labelGenerator.getLabel(result);
     } else if (t === 'train') {
       result = this._calculateTrain(d, c);
-      lbl = this._getLabel(result);
+      lbl = this.labelGenerator.getLabel(result);
     } else if (t === 'bus') {
       result = d * 0.104;
-      lbl = this._getLabel(result);
+      lbl = this.labelGenerator.getLabel(result);
     }
 
     return { co2: result, label: lbl };
   }
 
-  _calculateCar(d: any, ct: any, p: any, c: any): number {
+  private _calculateCar(d: any, ct: any, p: any, c: any): number {
     var result = 0;
     if (ct === 'thermal') {
       result = d * 0.192;
@@ -45,7 +68,7 @@ class CalculatorService {
     return result;
   }
 
-  _calculateTrain(d: any, c: any): number {
+  private _calculateTrain(d: any, c: any): number {
     var result = 0;
     if (c === 'France') {
       result = d * 0.0032;
@@ -59,16 +82,6 @@ class CalculatorService {
       result = d * 0.041;
     }
     return result;
-  }
-
-  _getLabel(result: number): string {
-    if (result < 5) {
-      return 'GREEN';
-    } else if (result >= 5 && result < 15) {
-      return 'ORANGE';
-    } else {
-      return 'RED';
-    }
   }
 }
 

@@ -3,26 +3,89 @@
 
 ---
 
-## Principe SOLID appliqué : [nom du principe]
+## Principe SOLID appliqué : Single Responsibility Principle
 
 **Problème identifié :**
-[Décrivez ce qui était violé dans le code original — localisez avec fichier + ligne]
+`backend/src/calculatorService.ts`
+La classe calculatorService gère plusieurs responsabilités à la fois :
+ - calcul des émissions pour car, train, bus, bike, walk
+ - calculs spécifiques par pays
+ - génération du label GREEN / ORANGE / RED
 
 **Transformation réalisée :**
-[Ce que vous avez fait — créé une interface ? extrait une classe ? inversé une dépendance ?]
+Création de deux nouvelles classes distinctes :
+- EmissionCalculator — responsable uniquement du calcul des émissions CO2
+- LabelGenerator — responsable uniquement de la génération des labels
 
 **Avant :**
-```[langage]
-// extrait du code original
+```typescript
+// backend/src/calculatorService.ts (avant)
+class CalculatorService {
+  calculate(d: any, t: any, ct: any, p: any, c: any): any {
+    var result = 0;
+    var lbl = '';
+
+    if (t === 'bike' || t === 'walk') {
+      result = 0;
+      lbl = 'GREEN';
+    } else if (t === 'car') {
+      result = this._calculateCar(d, ct, p, c);
+      lbl = this._getLabel(result);  // ← responsabilité mélangée
+    } else if (t === 'train') {
+      result = this._calculateTrain(d, c);
+      lbl = this._getLabel(result);
+    } else if (t === 'bus') {
+      result = d * 0.104;
+      lbl = this._getLabel(result);
+    }
+
+    return { co2: result, label: lbl };
+  }
+
+  _calculateCar(d: any, ct: any, p: any, c: any): number { /* ... */ }
+  _calculateTrain(d: any, c: any): number { /* ... */ }
+  _getLabel(result: number): string {  // ← méthode hors sujet
+    if (result < 5) return 'GREEN';
+    else if (result >= 5 && result < 15) return 'ORANGE';
+    else return 'RED';
+  }
+}
 ```
 
 **Après :**
-```[langage]
-// extrait du code refactoré
+```typescript
+// backend/src/services/EmissionCalculator.ts
+class EmissionCalculator {
+  calculate(distance: number, type: TransportType, options?: TransportOptions): number {
+    switch (type) {
+      case 'bike':
+      case 'walk':
+        return 0;
+      case 'car':
+        return this.calculateCar(distance, options);
+      case 'train':
+        return this.calculateTrain(distance, options?.country);
+      case 'bus':
+        return distance * 0.104;
+    }
+  }
+
+  private calculateCar(d: number, opts?: TransportOptions): number { /* ... */ }
+  private calculateTrain(d: number, country?: string): number { /* ... */ }
+}
+
+// backend/src/services/LabelGenerator.ts
+class LabelGenerator {
+  getLabel(emission: number): Label {
+    if (emission < 5) return 'GREEN';
+    if (emission < 15) return 'ORANGE';
+    return 'RED';
+  }
+}
 ```
 
 **Bénéfice concret :**
-[Ce que ça change en pratique : "on peut maintenant ajouter un mode de transport sans toucher à..."]
+On peut maintenant modifier les seuils de label sans toucher au calcul d'émissions, et inversement.
 
 ---
 
