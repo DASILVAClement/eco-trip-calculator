@@ -25,27 +25,29 @@ class CalculatorService {
   }
 
   calculate(d: any, t: any, ct: any, p: any, c: any): any {
-    var result = 0;
-    var lbl = '';
-
     if (t === 'bike' || t === 'walk') {
-      result = 0;
-      lbl = 'GREEN';
-    } else {
-      const calculator = factory.getCalculator(t);
-      if (calculator) {
-        if (t === 'car') {
-          result = calculator.calculate(d, ct, p, c);
-        } else if (t === 'train') {
-          result = calculator.calculate(d, c);
-        } else if (t === 'bus') {
-          result = calculator.calculate(d);
-        }
-        lbl = this.labelGenerator.getLabel(result);
-      }
+      return { co2: 0, label: 'GREEN' };
     }
 
-    return { co2: result, label: lbl };
+    const calculator = factory.getCalculator(t);
+    if (!calculator) {
+      return { co2: 0, label: 'GREEN' };
+    }
+
+    const result = this.getCalculatorResult(calculator, t, d, ct, p, c);
+    const label = this.labelGenerator.getLabel(result);
+
+    return { co2: result, label };
+  }
+
+  private getCalculatorResult(calculator: any, t: any, d: any, ct: any, p: any, c: any): number {
+    if (t === 'car') {
+      return calculator.calculate(d, ct, p, c);
+    }
+    if (t === 'train') {
+      return calculator.calculate(d, c);
+    }
+    return calculator.calculate(d);
   }
 }
 

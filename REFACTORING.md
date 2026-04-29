@@ -107,16 +107,15 @@ Si l'on ajoute un type de transport, seule la Fabrique est impactée pour lier l
 
 ## Object Calisthenics appliquées
 
-### Règle #[N] — [nom de la règle]
+Règle #1 — Une seule indentation par méthode
+Violation originale : backend/src/calculatorService.ts:27-51
+Le bloc calculate utilise plusieurs branches if/else if/else, ce qui crée plusieurs niveaux d'indentation du même côté.
 
-**Violation originale :** `[fichier:ligne]`
-[Extrait + explication de la violation]
+Transformation :
+Remplacement des branches imbriquées par des retours et des méthodes pour réduire l'indentation à un seul niveau par méthode.
 
-**Transformation :**
-[Ce que vous avez fait]
-
-**Bénéfice :**
-[En une phrase]
+Bénéfice :
+La méthode est plus simple à lire, chaque chemin d'exécution est plus direct et le code est plus facile à déboguer.
 
 ### Règle #[N] — [nom de la règle]
 
