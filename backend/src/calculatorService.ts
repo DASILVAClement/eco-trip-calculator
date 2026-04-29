@@ -24,30 +24,30 @@ class CalculatorService {
     this.labelGenerator = new LabelGenerator();
   }
 
-  calculate(d: any, t: any, ct: any, p: any, c: any): any {
-    if (t === 'bike' || t === 'walk') {
+  calculate(distance: any, transportMode: any, carType: any, passengers: any, country: any): any {
+    if (transportMode === 'bike' || transportMode === 'walk') {
       return { co2: 0, label: 'GREEN' };
     }
 
-    const calculator = factory.getCalculator(t);
+    const calculator = factory.getCalculator(transportMode);
     if (!calculator) {
       return { co2: 0, label: 'GREEN' };
     }
 
-    const result = this.getCalculatorResult(calculator, t, d, ct, p, c);
-    const label = this.labelGenerator.getLabel(result);
+    const co2 = this.getCalculatorResult(calculator, transportMode, distance, carType, passengers, country);
+    const label = this.labelGenerator.getLabel(co2);
 
-    return { co2: result, label };
+    return { co2, label };
   }
 
-  private getCalculatorResult(calculator: any, t: any, d: any, ct: any, p: any, c: any): number {
-    if (t === 'car') {
-      return calculator.calculate(d, ct, p, c);
+  private getCalculatorResult(calculator: any, transportMode: any, distance: any, carType: any, passengers: any, country: any): number {
+    if (transportMode === 'car') {
+      return calculator.calculate(distance, carType, passengers, country);
     }
-    if (t === 'train') {
-      return calculator.calculate(d, c);
+    if (transportMode === 'train') {
+      return calculator.calculate(distance, country);
     }
-    return calculator.calculate(d);
+    return calculator.calculate(distance);
   }
 }
 

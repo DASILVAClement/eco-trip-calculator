@@ -108,7 +108,7 @@ Si l'on ajoute un type de transport, seule la Fabrique est impactée pour lier l
 ## Object Calisthenics appliquées
 
 Règle #1 — Une seule indentation par méthode
-Violation originale : backend/src/calculatorService.ts:27-51
+Violation originale : `backend/src/calculatorService.ts:27-51`
 Le bloc calculate utilise plusieurs branches if/else if/else, ce qui crée plusieurs niveaux d'indentation du même côté.
 
 Transformation :
@@ -117,9 +117,15 @@ Remplacement des branches imbriquées par des retours et des méthodes pour réd
 Bénéfice :
 La méthode est plus simple à lire, chaque chemin d'exécution est plus direct et le code est plus facile à déboguer.
 
-### Règle #[N] — [nom de la règle]
+Règle #6 — Pas d'abréviation
+Violation originale : `backend/src/calculatorService.ts`
+La méthode calculate utilise des paramètres abrégés (d, t, ct, p, c) et des variables courtes qui rendent le code moins explicite.
 
-[idem]
+Transformation :
+Renommage des paramètres en distance, transportMode, carType, passengers, country et les variables en co2 et label.
+
+Bénéfice :
+Le code devient plus clair pour un lecteur qui découvre la classe, sans avoir besoin de deviner le rôle des variables.
 
 ---
 
